@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"go_product_grpc/grpc/pb"
+	"go_product_grpc/protofiles/pb"
 	"log"
 	"net"
 

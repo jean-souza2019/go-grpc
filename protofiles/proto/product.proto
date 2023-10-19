@@ -1,13 +1,14 @@
 syntax = "proto3";
 
-package grpc.pb;
+package github.com.codeedu.codepix;
 
-option go_package = "grpc/pb";
+option go_package = "protofiles/pb";
 
 service ProductService {
     rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {};
     rpc FindProducts(FindProductsRequest) returns (FindProductsResponse) {};
 }
+
 
 message CreateProductRequest {
     string name = 1;
