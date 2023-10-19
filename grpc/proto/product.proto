@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package grpc.pb;
+
+option go_package = "grpc/pb";
+
+message Product {
+  string id = 1;
+  string name = 2;
+}
+
+message SaveResponse {
+  bool success = 1;
+}
+
+message QueryRequest {
+  string id = 1;
+}
+
+message QueryResponse {
+  repeated Product product = 1;
+}
+
+service DataService {
+  rpc SaveProduct (Product) returns (SaveResponse);
+  rpc FindProduct (QueryRequest) returns (QueryResponse);
+}

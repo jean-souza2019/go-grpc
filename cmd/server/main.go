@@ -6,36 +6,67 @@ import (
 	"log"
 	"net"
 
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	pb.UnimplementedHelloServer
+	pb.UnimplementedDataServiceServer
+	db *gorm.DB
 }
 
-func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+type Product struct {
+	gorm.Model
+	Id   string
+	Name string
+}
 
-	return &pb.HelloResponse{Message: "hello world" + in.GetName()}, nil
+func (s *Server) SaveProduct(ctx context.Context, product *pb.Product) (*pb.SaveResponse, error) {
+	newData := Product{Id: product.Id, Name: product.Name}
+	s.db.Create(&newData)
+	return &pb.SaveResponse{Success: true}, nil
+}
+
+func (s *Server) FindProduct(ctx context.Context, query *pb.QueryRequest) (*pb.QueryResponse, error) {
+	var results []*pb.Product
+	s.db.Where("id = ?", query.Id).Find(&results)
+
+	protobufResults := make([]*pb.Product, len(results))
+	for i, d := range results {
+		protobufResults[i] = &pb.Product{Id: d.Id, Name: d.Name}
+	}
+
+	return &pb.QueryResponse{Product: protobufResults}, nil
 }
 
 func main() {
-	println("Running rpc server")
+	port := "50051"
+	println("Running rpc server on port: " + port)
 
 	network := "tcp"
-	address := "localhost:50051"
+	address := "localhost:" + port
 
-	listner, err := net.Listen(network, address)
-
+	listener, err := net.Listen(network, address)
 	if err != nil {
 		panic(err)
 	}
 
-	grpcServer := grpc.NewServer()
-
-	pb.RegisterHelloServer(grpcServer, &Server{})
-
-	if err := grpcServer.Serve(listner); err != nil {
-		log.Fatalf("Failed server: %v", err)
+	db, err := gorm.Open(sqlite.Open("products.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Failed to open the database: %v", err)
 	}
 
+	db.AutoMigrate(&Product{})
+
+	println("Success automigrate sqllite database")
+
+	grpcServer := grpc.NewServer()
+
+	pb.RegisterDataServiceServer(grpcServer, &Server{db: db})
+
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Failed server: %v", err)
+	}
 }
