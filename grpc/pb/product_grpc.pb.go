@@ -18,122 +18,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DataServiceClient is the client API for DataService service.
+// ProductServiceClient is the client API for ProductService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DataServiceClient interface {
-	SaveProduct(ctx context.Context, in *Product, opts ...grpc.CallOption) (*SaveResponse, error)
-	FindProduct(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
+type ProductServiceClient interface {
+	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
+	FindProducts(ctx context.Context, in *FindProductsRequest, opts ...grpc.CallOption) (*FindProductsResponse, error)
 }
 
-type dataServiceClient struct {
+type productServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewDataServiceClient(cc grpc.ClientConnInterface) DataServiceClient {
-	return &dataServiceClient{cc}
+func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
+	return &productServiceClient{cc}
 }
 
-func (c *dataServiceClient) SaveProduct(ctx context.Context, in *Product, opts ...grpc.CallOption) (*SaveResponse, error) {
-	out := new(SaveResponse)
-	err := c.cc.Invoke(ctx, "/grpc.pb.DataService/SaveProduct", in, out, opts...)
+func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
+	out := new(CreateProductResponse)
+	err := c.cc.Invoke(ctx, "/grpc.pb.ProductService/CreateProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataServiceClient) FindProduct(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error) {
-	out := new(QueryResponse)
-	err := c.cc.Invoke(ctx, "/grpc.pb.DataService/FindProduct", in, out, opts...)
+func (c *productServiceClient) FindProducts(ctx context.Context, in *FindProductsRequest, opts ...grpc.CallOption) (*FindProductsResponse, error) {
+	out := new(FindProductsResponse)
+	err := c.cc.Invoke(ctx, "/grpc.pb.ProductService/FindProducts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// DataServiceServer is the server API for DataService service.
-// All implementations must embed UnimplementedDataServiceServer
+// ProductServiceServer is the server API for ProductService service.
+// All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
-type DataServiceServer interface {
-	SaveProduct(context.Context, *Product) (*SaveResponse, error)
-	FindProduct(context.Context, *QueryRequest) (*QueryResponse, error)
-	mustEmbedUnimplementedDataServiceServer()
+type ProductServiceServer interface {
+	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
+	FindProducts(context.Context, *FindProductsRequest) (*FindProductsResponse, error)
+	mustEmbedUnimplementedProductServiceServer()
 }
 
-// UnimplementedDataServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedDataServiceServer struct {
+// UnimplementedProductServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedProductServiceServer struct {
 }
 
-func (UnimplementedDataServiceServer) SaveProduct(context.Context, *Product) (*SaveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveProduct not implemented")
+func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedDataServiceServer) FindProduct(context.Context, *QueryRequest) (*QueryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindProduct not implemented")
+func (UnimplementedProductServiceServer) FindProducts(context.Context, *FindProductsRequest) (*FindProductsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindProducts not implemented")
 }
-func (UnimplementedDataServiceServer) mustEmbedUnimplementedDataServiceServer() {}
+func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
-// UnsafeDataServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DataServiceServer will
+// UnsafeProductServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProductServiceServer will
 // result in compilation errors.
-type UnsafeDataServiceServer interface {
-	mustEmbedUnimplementedDataServiceServer()
+type UnsafeProductServiceServer interface {
+	mustEmbedUnimplementedProductServiceServer()
 }
 
-func RegisterDataServiceServer(s grpc.ServiceRegistrar, srv DataServiceServer) {
-	s.RegisterService(&DataService_ServiceDesc, srv)
+func RegisterProductServiceServer(s grpc.ServiceRegistrar, srv ProductServiceServer) {
+	s.RegisterService(&ProductService_ServiceDesc, srv)
 }
 
-func _DataService_SaveProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Product)
+func _ProductService_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataServiceServer).SaveProduct(ctx, in)
+		return srv.(ProductServiceServer).CreateProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.pb.DataService/SaveProduct",
+		FullMethod: "/grpc.pb.ProductService/CreateProduct",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataServiceServer).SaveProduct(ctx, req.(*Product))
+		return srv.(ProductServiceServer).CreateProduct(ctx, req.(*CreateProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataService_FindProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryRequest)
+func _ProductService_FindProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindProductsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataServiceServer).FindProduct(ctx, in)
+		return srv.(ProductServiceServer).FindProducts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.pb.DataService/FindProduct",
+		FullMethod: "/grpc.pb.ProductService/FindProducts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataServiceServer).FindProduct(ctx, req.(*QueryRequest))
+		return srv.(ProductServiceServer).FindProducts(ctx, req.(*FindProductsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// DataService_ServiceDesc is the grpc.ServiceDesc for DataService service.
+// ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var DataService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.pb.DataService",
-	HandlerType: (*DataServiceServer)(nil),
+var ProductService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.pb.ProductService",
+	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SaveProduct",
-			Handler:    _DataService_SaveProduct_Handler,
+			MethodName: "CreateProduct",
+			Handler:    _ProductService_CreateProduct_Handler,
 		},
 		{
-			MethodName: "FindProduct",
-			Handler:    _DataService_FindProduct_Handler,
+			MethodName: "FindProducts",
+			Handler:    _ProductService_FindProducts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

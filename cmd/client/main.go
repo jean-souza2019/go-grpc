@@ -16,14 +16,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client := pb.NewDataServiceClient(con)
+	client := pb.NewProductServiceClient(con)
 
-	req := &pb.Product{
-		Id:   "2",
-		Name: "name mock",
+	req := &pb.CreateProductRequest{
+		Name:        "name product",
+		Description: "product teste",
+		Price:       75.22,
 	}
 
-	res, err := client.SaveProduct(context.Background(), req)
+	res, err := client.CreateProduct(context.Background(), req)
 
 	if err != nil {
 		log.Fatal(err)

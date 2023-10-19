@@ -4,24 +4,32 @@ package grpc.pb;
 
 option go_package = "grpc/pb";
 
+service ProductService {
+    rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {};
+    rpc FindProducts(FindProductsRequest) returns (FindProductsResponse) {};
+}
+
+message CreateProductRequest {
+    string name = 1;
+    string description = 2;
+    float price = 3;
+}
+
 message Product {
-  string id = 1;
-  string name = 2;
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    float price = 4;
 }
 
-message SaveResponse {
-  bool success = 1;
+message CreateProductResponse {
+    Product product = 1;
 }
 
-message QueryRequest {
-  string id = 1;
+message FindProductsRequest{
+
 }
 
-message QueryResponse {
-  repeated Product product = 1;
-}
-
-service DataService {
-  rpc SaveProduct (Product) returns (SaveResponse);
-  rpc FindProduct (QueryRequest) returns (QueryResponse);
+message FindProductsResponse{
+   repeated Product products = 1;
 }

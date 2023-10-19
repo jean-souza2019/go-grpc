@@ -13,32 +13,48 @@ import (
 )
 
 type Server struct {
-	pb.UnimplementedDataServiceServer
+	pb.UnimplementedProductServiceServer
 	db *gorm.DB
 }
 
 type Product struct {
 	gorm.Model
-	Id   string
-	Name string
+	Name        string
+	Description string
+	Price       float32
 }
 
-func (s *Server) SaveProduct(ctx context.Context, product *pb.Product) (*pb.SaveResponse, error) {
-	newData := Product{Id: product.Id, Name: product.Name}
-	s.db.Create(&newData)
-	return &pb.SaveResponse{Success: true}, nil
+func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+	newProduct := Product{Name: req.GetName(), Description: req.GetDescription(), Price: req.GetPrice()}
+	s.db.Create(&newProduct)
+
+	return &pb.CreateProductResponse{
+		Product: &pb.Product{
+			Id:          int32(newProduct.ID),
+			Name:        newProduct.Name,
+			Description: newProduct.Description,
+			Price:       newProduct.Price,
+		},
+	}, nil
 }
 
-func (s *Server) FindProduct(ctx context.Context, query *pb.QueryRequest) (*pb.QueryResponse, error) {
-	var results []*pb.Product
-	s.db.Where("id = ?", query.Id).Find(&results)
+func (s *Server) FindProducts(ctx context.Context, req *pb.FindProductsRequest) (*pb.FindProductsResponse, error) {
+	var products []Product
+	s.db.Find(&products)
 
-	protobufResults := make([]*pb.Product, len(results))
-	for i, d := range results {
-		protobufResults[i] = &pb.Product{Id: d.Id, Name: d.Name}
+	var responseProducts []*pb.Product
+	for _, p := range products {
+		responseProducts = append(responseProducts, &pb.Product{
+			Id:          int32(p.ID),
+			Name:        p.Name,
+			Description: p.Description,
+			Price:       p.Price,
+		})
 	}
 
-	return &pb.QueryResponse{Product: protobufResults}, nil
+	return &pb.FindProductsResponse{
+		Products: responseProducts,
+	}, nil
 }
 
 func main() {
@@ -64,7 +80,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterDataServiceServer(grpcServer, &Server{db: db})
+	pb.RegisterProductServiceServer(grpcServer, &Server{db: db})
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed server: %v", err)
